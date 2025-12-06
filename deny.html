@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Denied Requests</title>
+</head>
+<body>
+
+<h2>Denied Requests</h2>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody id="denied-data"></tbody>
+</table>
+
+<script>
+fetch("api/get_requests.php?status=Denied")
+    .then(response => response.json())
+    .then(data => {
+        let rows = "";
+        data.forEach(request => {
+            rows += `
+                <tr>
+                    <td>${request.id}</td>
+                    <td>${request.name}</td>
+                    <td>${request.status}</td>
+                </tr>
+            `;
+        });
+        document.getElementById("denied-data").innerHTML = rows;
+    });
+</script>
+
+</body>
+</html>

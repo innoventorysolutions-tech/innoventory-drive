@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pending Requests</title>
+</head>
+<body>
+
+<h2>Pending Requests</h2>
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody id="pending-data"></tbody>
+</table>
+
+<script>
+fetch("api/get_requests.php?status=Pending")
+    .then(response => response.json())
+    .then(data => {
+        let rows = "";
+        data.forEach(request => {
+            rows += `
+                <tr>
+                    <td>${request.id}</td>
+                    <td>${request.name}</td>
+                    <td>${request.status}</td>
+                    <td>
+                        <a href="api/approve.php?id=${request.id}">Approve</a> |
+                        <a href="api/deny.php?id=${request.id}">Deny</a>
+                    </td>
+                </tr>
+            `;
+        });
+        document.getElementById("pending-data").innerHTML = rows;
+    });
+</script>
+
+</body>
+</html>
