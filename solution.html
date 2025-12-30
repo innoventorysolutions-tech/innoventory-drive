@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Innoventory Drive - Admin (CSV & Bulk)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f8f9fa; --panel:#fff; --muted:#666; --accent:#007bff; --text:#111;
+      --sidebar:#111; --sidebarText:#fff; --surface-border:#e6e6e6;
+    }
+    body{font-family:'Poppins',sans-serif;margin:0;display:flex;min-height:100vh;background:var(--bg);color:var(--text);transition:background .25s,color .25s}
+    body.dark{ --bg:#121212; --panel:#1e1e1e; --muted:#bdbdbd; --accent:#66aaff; --text:#eee; --sidebar:#000; --sidebarText:#fff; --surface-border:#333 }
+
+    .sidebar{width:240px;background:var(--sidebar);color:var(--sidebarText);padding:24px;box-sizing:border-box;border-right:1px solid rgba(0,0,0,.06)}
+    .logo{display:flex;gap:12px;align-items:center;margin-bottom:22px}
+    .logo-image{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#0056d2);display:flex;align-items:center;justify-content:center;color:#fff}
+    .logo-text{font-weight:700;line-height:1}
+    .new-btn{width:100%;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:600;cursor:pointer;margin-bottom:18px}
+    .nav-menu ul{list-style:none;padding:0;margin:10px 0}
+    .nav-menu li{margin-bottom:10px}
+    .nav-menu a{display:block;color:rgba(255,255,255,.85);text-decoration:none;padding:8px;border-radius:8px}
+    .nav-menu a.active{background:rgba(255,255,255,.06);}
+
+    main.content{flex:1;padding:18px 28px;box-sizing:border-box;min-height:100vh;background:var(--bg)}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px}
+    .left-tools{display:flex;gap:12px;align-items:center}
+    .search-box{display:flex;align-items:center;background:var(--panel);border:1px solid var(--surface-border);padding:8px 12px;border-radius:8px;min-width:280px}
+    .search-box input{border:0;background:transparent;outline:none;width:100%;color:var(--text)}
+    .theme-toggle{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+
+    .profile{position:relative}
+    .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0056d2);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;cursor:pointer}
+    .profile-menu{position:absolute;right:0;top:56px;background:var(--panel);color:var(--text);border:1px solid var(--surface-border);border-radius:10px;padding:8px;min-width:150px;box-shadow:0 10px 30px rgba(0,0,0,.08);display:none}
+    .profile-menu a{display:block;padding:8px;border-radius:6px;text-decoration:none;color:var(--text)}
+    .profile-menu a:hover{background:rgba(0,0,0,.04)}
+
+    .view-tabs{display:flex;gap:10px;margin-bottom:16px}
+    .tab-btn{background:var(--panel);border:1px solid var(--surface-border);padding:8px 12px;border-radius:8px;cursor:pointer}
+    .tab-btn.active{background:var(--accent);color:#fff;border-color:transparent}
+
+    .grid-area{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+    .card{background:var(--panel);border:1px solid var(--surface-border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:110px}
+    .icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.04);font-weight:700}
+    .name{font-weight:600;word-break:break-word}
+    .meta{font-size:13px;color:var(--muted)}
+
+    .panel{background:var(--panel);border:1px solid var(--surface-border);padding:16px;border-radius:12px;box-sizing:border-box}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--surface-border);text-align:left;color:var(--text)}
+    th{color:var(--accent);font-weight:600}
+    .action-btn{padding:6px 10px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+    .approve{background:var(--accent);color:#fff}
+    .deny{background:#dc3545;color:#fff}
+    .small{font-size:13px;color:var(--muted)}
+
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .flex-row{display:flex;gap:12px;align-items:center}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:999}
+    .modal-overlay.active{display:flex}
+    .modal{background:var(--panel);padding:18px;border-radius:12px;min-width:320px;border:1px solid var(--surface-border);color:var(--text)}
+    .modal h3{margin-bottom:12px}
+    .modal input, .modal select{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid var(--surface-border);background:transparent;color:var(--text);box-sizing:border-box}
+    .modal .row{display:flex;gap:8px}
+    .modal .row input{flex:1}
+    .modal .btns{display:flex;gap:8px;justify-content:flex-end;margin-top:6px}
+    .btn-prim{background:var(--accent);color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer}
+    .btn-sec{background:transparent;border:1px solid var(--surface-border);padding:8px 12px;border-radius:8px;cursor:pointer}
+
+    @media (max-width:900px){ .sidebar{display:none} .grid-area{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))} }
+  </style>
+</head>
+<body>
+  <aside class="sidebar" aria-label="sidebar">
+    <div class="logo">
+      <div class="logo-image">I</div>
+      <div class="logo-text">INNOVENTORY<br><span style="font-weight:500;font-size:13px">SOLUTIONS</span></div>
+    </div>
+    <button class="new-btn" id="globalAddBtn">+ New</button>
+    <nav class="nav-menu">
+      <ul>
+        <li><a href="#" class="active">Home</a></li>
+        <li><a href="#">My Drive</a></li>
+        <li><a href="#">Shared</a></li>
+        <li><a href="#">Computers</a></li>
+        <li style="margin-top:12px"><a href="#">Users</a></li>
+        <li><a href="#">Storage</a></li>
+      </ul>
+    </nav>
+    <div style="margin-top:18px;font-size:13px;color:rgba(255,255,255,.7)">Signed in as</div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+      <div class="avatar" id="sidebarAvatar">A</div>
+      <div style="font-weight:600">Admin</div>
+    </div>
+  </aside>
+
+  <main class="content">
+    <div class="topbar">
+      <div class="left-tools">
+        <div class="search-box" title="Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:.7">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <input id="globalSearch" placeholder="Search in Drive..." />
+        </div>
+
+        <div class="view-tabs" role="tablist" aria-label="views">
+          <button class="tab-btn active" data-view="grid" id="tabGrid">Grid</button>
+          <button class="tab-btn" data-view="admin" id="tabAdmin">Admin</button>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+
+        <div class="profile" id="profileWrap">
+          <div class="avatar" id="profileAvatar">A</div>
+          <div class="profile-menu" id="profileMenu" aria-hidden="true">
+            <a href="#" id="profileName">Admin</a>
+            <a href="#" id="settingsBtn">Settings</a>
+            <a href="#" id="logoutBtn">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW -->
+    <section id="gridView">
+      <div class="section-title">
+        <h2 style="margin:0">My Drive</h2>
+        <div class="flex-row">
+          <button class="icon-btn" id="addFolderBtn">+ Folder</button>
+          <button class="icon-btn" id="addFileBtn">+ File</button>
+        </div>
+      </div>
+
+      <div class="grid-area panel" id="itemsGrid" style="padding:16px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
+    </section>
+
+    <!-- ADMIN VIEW -->
+    <section id="adminView" style="display:none">
+      <div class="section-title">
+        <h2 style="margin:0">Pending Requests</h2>
+        <div class="flex-row">
+          <button class="btn-prim" id="openAddUser">Add User</button>
+          <button class="btn-sec" id="bulkApproveBtn">Bulk Approve</button>
+          <button class="btn-sec" id="bulkDenyBtn">Bulk Deny</button>
+          <input type="file" id="importCsvInput" accept=".csv" style="display:none;">
+          <button class="btn-sec" id="importCsvBtn">Import CSV</button>
+          <button class="btn-prim" id="exportApprovedBtn">Export Approved CSV</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:18px">
+        <table id="pendingTable">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="selectAllPending"></th>
+              <th>Name</th><th>Email</th><th>Reason</th><th>Location</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="section-title">
+        <h3 style="margin:0">Approved Users</h3>
+      </div>
+
+      <div class="panel">
+        <table id="approvedTable">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Reason</th><th>Location</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+  <script>
+    const qs = s => document.querySelector(s);
+    const storage = {
+      get(key, fallback){ try{ const v=localStorage.getItem(key); return v?JSON.parse(v):fallback }catch(e){return fallback} },
+      set(key,val){localStorage.setItem(key,JSON.stringify(val))}
+    };
+
+    let items = storage.get('drive_items', [
+      {id:uid(),type:'folder',name:'Project Docs',meta:'3 items'},
+      {id:uid(),type:'file',name:'Presentation.pdf',meta:'120 KB'}
+    ]);
+    let pendingUsers = storage.get('pending_users', []);
+    let approvedUsers = storage.get('approved_users', []);
+    const gridView = qs('#gridView'), adminView = qs('#adminView');
+    const itemsGrid = qs('#itemsGrid');
+    const pendingTbody = qs('#pendingTable tbody'), approvedTbody = qs('#approvedTable tbody');
+    const modalOverlay = qs('#modalOverlay'), modalContent = qs('#modalContent');
+
+    const tabGrid = qs('#tabGrid'), tabAdmin = qs('#tabAdmin');
+    const themeToggle = qs('#themeToggle');
+
+    // theme
+    const currentTheme = storage.get('theme','light');
+    if(currentTheme === 'dark'){ document.body.classList.add('dark'); themeToggle.textContent='☀️ Light Mode' }
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      themeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+      storage.set('theme', isDark ? 'dark' : 'light');
+    });
+
+    // profile menu
+    qs('#profileAvatar').addEventListener('click', ()=> {
+      const pm = qs('#profileMenu'); pm.style.display = pm.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', e=> { if(!qs('#profileWrap').contains(e.target)) qs('#profileMenu').style.display='none'; });
+
+    // tabs
+    function setView(v){ if(v==='grid'){ gridView.style.display='block'; adminView.style.display='none'; tabGrid.classList.add('active'); tabAdmin.classList.remove('active'); }
+                       else { gridView.style.display='none'; adminView.style.display='block'; tabAdmin.classList.add('active'); tabGrid.classList.remove('active'); } }
+    tabGrid.addEventListener('click', ()=> setView('grid'));
+    tabAdmin.addEventListener('click', ()=> setView('admin'));
+
+    function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+
+    // render items
+    function renderItems(){
+      itemsGrid.innerHTML=''; items.forEach(it=>{
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `<div class="icon">${it.type==='folder'?'📁':'📄'}</div>
+                          <div class="name">${escapeHtml(it.name)}</div>
+                          <div class="meta small">${escapeHtml(it.meta||'')}</div>
+                          <div style="margin-top:auto;display:flex;justify-content:space-between">
+                            <button class="btn-sec" data-id="${it.id}" data-act="open">Open</button>
+                            <button class="btn-sec" data-id="${it.id}" data-act="delete">Delete</button>
+                          </div>`;
+        itemsGrid.appendChild(card);
+      });
+    }
+
+    // render users
+    function renderUsers(){
+      pendingTbody.innerHTML=''; approvedTbody.innerHTML='';
+      pendingUsers.forEach((u, idx)=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td><input type="checkbox" class="pending-check" data-idx="${idx}"></td>
+          <td>${escapeHtml(u.name)}</td><td>${escapeHtml(u.email)}</td><td>${escapeHtml(u.reason)}</td><td>${escapeHtml(u.location)}</td>
+          <td><button class="action-btn approve" data-idx="${idx}">Approve</button>
+              <button class="action-btn deny" data-idx="${idx}">Deny</button></td>`;
+        pendingTbody.appendChild(tr);
+      });
+      approvedUsers.forEach(u=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${escapeHtml(u.name)}</td><td>${escapeHtml(u.email)}</td><td>${escapeHtml(u.reason)}</td><td>${escapeHtml(u.location)}</td>`;
+        approvedTbody.appendChild(tr);
+      });
+      qs('#selectAllPending').checked = false;
+    }
+
+    function saveAll(){ storage.set('drive_items', items); storage.set('pending_users', pendingUsers); storage.set('approved_users', approvedUsers); }
+
+    // initial sample
+    if(pendingUsers.length===0 && approvedUsers.length===0){
+      pendingUsers.push({id:uid(),name:'Aditi Rawat',email:'aditi@gmail.com',reason:'Signup Request',location:'Dehradun'});
+      storage.set('pending_users', pendingUsers);
+    }
+    renderItems(); renderUsers();
+
+    // Global add modal
+    qs('#globalAddBtn').addEventListener('click', ()=> openModalChoice());
+    function openModalChoice(){
+      modalContent.innerHTML = `<h3>Create</h3>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="btn-prim" id="mNewFolder">New Folder</button>
+          <button class="btn-prim" id="mNewFile">New File</button>
+          <button class="btn-sec" id="mNewUser">New User</button>
+          <button class="btn-sec" id="mClose">Close</button>
+        </div>`;
+      qs('#mNewFolder').onclick = ()=> openFolderModal();
+      qs('#mNewFile').onclick = ()=> openFileModal();
+      qs('#mNewUser').onclick = ()=> openUserModal();
+      qs('#mClose').onclick = closeModal;
+      modalOverlay.classList.add('active');
+    }
+    function closeModal(){ modalOverlay.classList.remove('active'); modalContent.innerHTML=''; }
+
+    // folder modal
+    function openFolderModal(pref=''){
+      modalContent.innerHTML = `<h3>Create Folder</h3><input id="folderName" placeholder="Folder name" value="${escapeHtml(pref)}"><div class="btns"><button class="btn-sec" id="fCancel">Cancel</button><button class="btn-prim" id="fCreate">Create</button></div>`;
+      qs('#fCancel').onclick = closeModal;
+      qs('#fCreate').onclick = ()=> {
+        const name = qs('#folderName').value.trim(); if(!name) return alert('Enter folder name');
+        items.unshift({id:uid(),type:'folder',name,meta:'0 items'}); saveAll(); renderItems(); closeModal();
+      };
+      modalOverlay.classList.add('active');
+    }
+
+    // file modal
+    function openFileModal(){
+      modalContent.innerHTML = `<h3>Upload / Add File</h3><input id="fileName" placeholder="File name (e.g., report.pdf)"><input id="fileSize" placeholder="Size (e.g., 120 KB)"><div class="btns"><button class="btn-sec" id="fiCancel">Cancel</button><button class="btn-prim" id="fiCreate">Add File</button></div>`;
+      qs('#fiCancel').onclick = closeModal;
+      qs('#fiCreate').onclick = ()=> {
+        const name = qs('#fileName').value.trim(); const size = qs('#fileSize').value.trim();
+        if(!name) return alert('Enter file name');
+        items.unshift({id:uid(),type:'file',name,meta:size||''}); saveAll(); renderItems(); closeModal();
+      };
+      modalOverlay.classList.add('active');
+    }
+
+    // user modal
+    function openUserModal(pref=''){
+      modalContent.innerHTML = `<h3>Add User (Pending)</h3>
+        <input id="uName" placeholder="Full name" value="${escapeHtml(pref)}">
+        <input id="uEmail" placeholder="Email">
+        <input id="uReason" placeholder="Reason (e.g., Signup Request)">
+        <input id="uLocation" placeholder="Location">
+        <div class="btns"><button class="btn-sec" id="uCancel">Cancel</button><button class="btn-prim" id="uSave">Add</button></div>`;
+      qs('#uCancel').onclick = closeModal;
+      qs('#uSave').onclick = ()=> {
+        const name = qs('#uName').value.trim(), email = qs('#uEmail').value.trim();
+        const reason = qs('#uReason').value.trim(), location = qs('#uLocation').value.trim();
+        if(!name||!email||!reason||!location) return alert('Fill all fields');
+        pendingUsers.unshift({id:uid(),name,email,reason,location}); saveAll(); renderUsers(); closeModal(); setView('admin');
+      };
+      modalOverlay.classList.add('active');
+    }
+
+    qs('#openAddUser').addEventListener('click', ()=> openUserModal());
+    qs('#addFolderBtn').addEventListener('click', ()=> openFolderModal());
+    qs('#addFileBtn').addEventListener('click', ()=> openFileModal());
+    modalOverlay.addEventListener('click', e=> { if(e.target===modalOverlay) closeModal(); });
+
+    // itemsGrid actions
+    itemsGrid.addEventListener('click', e=>{
+      const btn = e.target.closest('button'); if(!btn) return;
+      const id = btn.dataset.id; const act = btn.dataset.act;
+      if(act==='open') alert('Open: ' + (items.find(it=>it.id===id)?.name||'item'));
+      if(act==='delete'){ if(confirm('Delete this item?')){ items = items.filter(i=>i.id!==id); saveAll(); renderItems(); } }
+    });
+
+    // pending approve/deny single
+    pendingTbody.addEventListener('click', e=>{
+      const btn = e.target.closest('button'); if(!btn) return;
+      const idx = Number(btn.dataset.idx);
+      if(btn.classList.contains('approve')){ const u = pendingUsers.splice(idx,1)[0]; approvedUsers.unshift(u); saveAll(); renderUsers(); }
+      else if(btn.classList.contains('deny')){ if(confirm('Deny and remove?')){ pendingUsers.splice(idx,1); saveAll(); renderUsers(); } }
+    });
+
+    // select all
+    qs('#selectAllPending').addEventListener('change', e=>{
+      const checked = e.target.checked;
+      qsa('.pending-check').forEach(cb => cb.checked = checked);
+    });
+
+    // bulk approve / deny
+    qs('#bulkApproveBtn').addEventListener('click', ()=>{
+      const checks = Array.from(qsa('.pending-check')).map(cb => ({cb,idx: Number(cb.dataset.idx)})).filter(o=>o.cb.checked);
+      if(checks.length===0) return alert('Select at least one request');
+      // collect users to approve in descending order by idx so splice works
+      const idxs = checks.map(o=>o.idx).sort((a,b)=>b-a);
+      idxs.forEach(i => { const u = pendingUsers.splice(i,1)[0]; approvedUsers.unshift(u); });
+      saveAll(); renderUsers();
+    });
+
+    qs('#bulkDenyBtn').addEventListener('click', ()=>{
+      const checks = Array.from(qsa('.pending-check')).map(cb => ({cb,idx: Number(cb.dataset.idx)})).filter(o=>o.cb.checked);
+      if(checks.length===0) return alert('Select at least one request');
+      if(!confirm('Deny selected requests?')) return;
+      const idxs = checks.map(o=>o.idx).sort((a,b)=>b-a);
+      idxs.forEach(i => pendingUsers.splice(i,1));
+      saveAll(); renderUsers();
+    });
+
+    // import CSV
+    qs('#importCsvBtn').addEventListener('click', ()=> qs('#importCsvInput').click());
+    qs('#importCsvInput').addEventListener('change', handleCsvFile);
+
+    function handleCsvFile(e){
+      const f = e.target.files[0]; if(!f) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const text = ev.target.result;
+        const parsed = parseCsv(text);
+        // expected header: name,email,reason,location (case-insensitive)
+        if(parsed.length===0) return alert('No rows found in CSV');
+        const headers = parsed[0].map(h=>h.toLowerCase().trim());
+        const nameIdx = headers.indexOf('name'), emailIdx = headers.indexOf('email'), reasonIdx = headers.indexOf('reason'), locIdx = headers.indexOf('location');
+        if(nameIdx<0 || emailIdx<0){ return alert('CSV must contain headers: name,email,reason,location (reason & location optional)'); }
+        for(let i=1;i<parsed.length;i++){
+          const row = parsed[i];
+          const name = (row[nameIdx]||'').trim(); const email = (row[emailIdx]||'').trim();
+          if(!name || !email) continue;
+          const reason = reasonIdx>=0 ? (row[reasonIdx]||'').trim() : 'Imported';
+          const location = locIdx>=0 ? (row[locIdx]||'').trim() : '';
+          pendingUsers.unshift({id:uid(),name,email,reason,location});
+        }
+        saveAll(); renderUsers(); alert('CSV imported to Pending Requests'); qs('#importCsvInput').value='';
+        setView('admin');
+      };
+      reader.readAsText(f);
+    }
+
+    // parse CSV simple (splits on newline, comma) — handles quoted fields lightly
+    function parseCsv(text){
+      const lines = text.replace(/\r/g,'').split('\n').filter(Boolean);
+      return lines.map(line => {
+        const parts=[]; let cur=''; let inQ=false;
+        for(let i=0;i<line.length;i++){
+          const ch = line[i];
+          if(ch==='\"'){ inQ=!inQ; continue; }
+          if(ch===',' && !inQ){ parts.push(cur); cur=''; } else cur+=ch;
+        }
+        parts.push(cur);
+        return parts.map(p=>p.trim());
+      });
+    }
+
+    // export approved CSV
+    qs('#exportApprovedBtn').addEventListener('click', ()=>{
+      if(approvedUsers.length===0) return alert('No approved users to export');
+      const header = ['name','email','reason','location'];
+      const rows = approvedUsers.map(u => [u.name,u.email,u.reason,u.location].map(escapeCsv).join(','));
+      const csv = header.join(',') + '\n' + rows.join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'approved-users.csv'; document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    // search filter
+    qs('#globalSearch').addEventListener('input', e=>{
+      const q = e.target.value.trim().toLowerCase();
+      // grid filter
+      Array.from(itemsGrid.children).forEach(card=>{
+        const name = card.querySelector('.name').textContent.toLowerCase();
+        card.style.display = name.includes(q) ? '' : 'none';
+      });
+      // admin filter
+      Array.from(pendingTbody.children).forEach(row=>{
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(q) ? '' : 'none';
+      });
+      Array.from(approvedTbody.children).forEach(row=>{
+        const rowText = row.textContent.toLowerCase();
+        row.style.display = rowText.includes(q) ? '' : 'none';
+      });
+    });
+
+    // drag & drop file adding
+    itemsGrid.addEventListener('dragover', e=>{ e.preventDefault(); itemsGrid.style.opacity = '.8'; });
+    itemsGrid.addEventListener('dragleave', e=>{ itemsGrid.style.opacity = '1'; });
+    itemsGrid.addEventListener('drop', e=>{
+      e.preventDefault(); itemsGrid.style.opacity = '1';
+      const name = e.dataTransfer.files && e.dataTransfer.files[0] ? e.dataTransfer.files[0].name : 'Dropped Item';
+      items.unshift({id:uid(),type:'file',name,meta:'uploaded'}); saveAll(); renderItems();
+    });
+
+    // select all checkbox handler (rebuild event delegation after render)
+    document.addEventListener('click', ()=>{}); // placeholder
+    // utility helpers
+    function escapeHtml(s){ return (s+'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function escapeCsv(cell){ if(cell==null) return ''; cell = (''+cell).replace(/"/g,'""'); return cell.includes(',')||cell.includes('"')?`"${cell}"`:cell; }
+
+    // initial save/render
+    saveAll(); renderItems(); renderUsers();
+  </script>
+</body>
+</html>
