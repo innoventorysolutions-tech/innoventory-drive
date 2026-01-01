@@ -1,13 +1,35 @@
 <?php
+<<<<<<< HEAD
 require_once "../../session.php";
 require_once "../../config.php";
 
 if ($_SESSION["role"] !== "admin") {
+=======
+// 1. Start Session
+require_once "../../session.php";
+
+// 2. PREVENT BROWSER CACHING (Must be before any output)
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
+
+// 3. Database Config
+require_once "../../config.php";
+
+// 4. Security Check (Fixed Logic)
+// If not logged in OR not an admin -> Redirect to Login
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true || $_SESSION["role"] !== "admin") {
+>>>>>>> aab77d8
     header("Location: ../../index.php");
     exit;
 }
 
+<<<<<<< HEAD
 // Get all pending requests (both users and admins)
+=======
+// Get all pending requests
+>>>>>>> aab77d8
 $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY role, name");
 ?>
 <!DOCTYPE html>
@@ -19,12 +41,17 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
     <link rel="stylesheet" href="../../css/main.css">
     <style>
         body {
+<<<<<<< HEAD
             background: #f6f6f9;
+=======
+            background: var(--bg);
+>>>>>>> aab77d8
             padding: 20px;
         }
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
+<<<<<<< HEAD
             background: #ffffff;
             padding: 30px;
             border-radius: 8px;
@@ -36,6 +63,19 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
         }
         .subtitle {
             color: #6b7280;
+=======
+            background: var(--panel);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: var(--soft-shadow);
+        }
+        h1 {
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: var(--muted);
+>>>>>>> aab77d8
             margin-bottom: 30px;
             font-size: 14px;
         }
@@ -45,6 +85,7 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             margin-bottom: 20px;
         }
         .message.success {
+<<<<<<< HEAD
             background: #d1fae5;
             color: #059669;
             border: 1px solid #a7f3d0;
@@ -53,6 +94,16 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             background: #fef2f2;
             color: #d13212;
             border: 1px solid #fecaca;
+=======
+            background: rgba(16, 185, 129, 0.08);
+            color: #059669;
+            border: 1px solid rgba(167,243,208,0.25);
+        }
+        .message.error {
+            background: rgba(254, 226, 226, 0.06);
+            color: #d13212;
+            border: 1px solid rgba(254,202,202,0.18);
+>>>>>>> aab77d8
         }
         table {
             width: 100%;
@@ -65,12 +116,21 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             border-bottom: 1px solid #e5e7eb;
         }
         table th {
+<<<<<<< HEAD
             background: #f9fafb;
             font-weight: 600;
             color: #374151;
         }
         table tr:hover {
             background: #f9fafb;
+=======
+            background: var(--table-head-bg);
+            font-weight: 600;
+            color: var(--text);
+        }
+        table tr:hover {
+            background: rgba(0,0,0,0.02);
+>>>>>>> aab77d8
         }
         .role-badge {
             display: inline-block;
@@ -80,11 +140,19 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             font-weight: 600;
         }
         .role-badge.admin {
+<<<<<<< HEAD
             background: #fef3c7;
             color: #92400e;
         }
         .role-badge.user {
             background: #dbeafe;
+=======
+            background: rgba(255,243,199,0.12);
+            color: #92400e;
+        }
+        .role-badge.user {
+            background: rgba(219,234,254,0.06);
+>>>>>>> aab77d8
             color: #1e40af;
         }
         .status-badge {
@@ -95,7 +163,11 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             font-weight: 600;
         }
         .status-badge.pending {
+<<<<<<< HEAD
             background: #fef3c7;
+=======
+            background: rgba(255,243,199,0.08);
+>>>>>>> aab77d8
             color: #92400e;
         }
         .action-links a {
@@ -112,7 +184,11 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
         .no-requests {
             text-align: center;
             padding: 40px;
+<<<<<<< HEAD
             color: #6b7280;
+=======
+            color: var(--muted);
+>>>>>>> aab77d8
         }
         .header-section {
             display: flex;
@@ -130,8 +206,13 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
             align-items: center;
             gap: 15px;
         }
+<<<<<<< HEAD
         .user-info {
             color: #6b7280;
+=======
+            .user-info {
+                color: var(--muted);
+>>>>>>> aab77d8
             font-size: 14px;
         }
         .btn-logout {
@@ -154,16 +235,62 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
 
     <div class="app-grid">
         <aside class="sidebar">
+<<<<<<< HEAD
+=======
+            <div class="site-logo">
+                <a href="/innoventory/index.php"><img src="/innoventory/logo/logo.png" alt="Innoventory logo"></a>
+            </div>
+>>>>>>> aab77d8
             <a href="/innoventory/pkg/user-management/admin_dashboard.php" class="btn-new">+ New</a>
             <ul class="menu">
                 <li class="active"><a href="/innoventory/pkg/user-management/admin_dashboard.php">Dashboard</a></li>
                 <li><a href="/innoventory/">My Drive</a></li>
                 <li><a href="/innoventory/#shared">Shared</a></li>
+<<<<<<< HEAD
                 <li><a href="/innoventory/pkg/user-management/admin_dashboard.php">Users</a></li>
+=======
+                <li><a href="/innoventory/pkg/user-management/users.php">Users</a></li>
+>>>>>>> aab77d8
                 <li><a href="/innoventory/#starred">Starred</a></li>
                 <li><a href="/innoventory/#bin">Bin</a></li>
                 <li><a href="/innoventory/#storage">Storage</a></li>
             </ul>
+<<<<<<< HEAD
+=======
+            <?php
+            // Show current admin user's storage widget (best-effort)
+            $storageAllocated = 0; $storageUsedBytes = 0; $uid = isset($_SESSION['id']) ? intval($_SESSION['id']) : 0;
+            if ($uid) {
+                $urow = $db->prepare("SELECT storage_gb FROM users WHERE id=? LIMIT 1");
+                if ($urow) { $urow->bind_param("i", $uid); $urow->execute(); $urow->bind_result($storageAllocated); $urow->fetch(); $urow->close(); }
+                $root = dirname(__DIR__, 2);
+                $candidates = [ $root . '/uploads/' . $uid, $root . '/files/' . $uid, $root . '/storage/' . $uid, $root . '/user_files/' . $uid, $root . '/data/users/' . $uid, $root . '/user/' . $uid ];
+                function dir_size_admin($path) { $size=0; if(!is_dir($path)) return 0; $it=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)); foreach($it as $f){ if($f->isFile()) $size += $f->getSize(); } return $size; }
+                foreach ($candidates as $p) { if (is_dir($p)) $storageUsedBytes += dir_size_admin($p); }
+            }
+            $allocatedBytes = max(0, intval($storageAllocated)) * 1024 * 1024 * 1024;
+            $usedGB = round($storageUsedBytes / (1024*1024*1024), 2);
+            $percent = ($allocatedBytes>0) ? round(($storageUsedBytes/$allocatedBytes)*100,1) : 0;
+            ?>
+            <div class="storage-widget" title="Storage used">
+                <svg class="chart" viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <?php $r=18; $c = 2*M_PI*$r; $dash = ($percent/100)*$c; ?>
+                    <circle cx="22" cy="22" r="<?php echo $r; ?>" stroke="rgba(0,0,0,0.06)" stroke-width="6" fill="none" />
+                    <circle cx="22" cy="22" r="<?php echo $r; ?>" stroke="var(--accent)" stroke-width="6" fill="none"
+                        stroke-dasharray="<?php echo $dash; ?> <?php echo $c; ?>" stroke-linecap="round" transform="rotate(-90 22 22)" />
+                    <text x="22" y="26" text-anchor="middle" font-size="10" fill="var(--text)"><?php echo intval($percent); ?>%</text>
+                </svg>
+                <div class="meta">
+                    <span class="amount"><?php echo $usedGB; ?> / <?php echo intval($storageAllocated); ?> GB</span>
+                    <span class="label">Storage used</span>
+                </div>
+            </div>
+            <!-- approved/denied infograph removed from sidebar; shown on dashboard main only -->
+            <!-- Logout placed below storage & infograph for easier access -->
+            <div style="padding:12px 16px 18px;">
+                <a href="logout.php" class="btn-logout" style="display:block; width:100%; text-align:center;">Logout</a>
+            </div>
+>>>>>>> aab77d8
         </aside>
 
         <main>
@@ -175,7 +302,10 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
                     </div>
                     <div class="header-right">
                         <span class="user-info">Welcome, <?= htmlspecialchars($_SESSION["name"] ?? "Admin"); ?></span>
+<<<<<<< HEAD
                         <a href="logout.php" class="btn-logout">Logout</a>
+=======
+>>>>>>> aab77d8
                     </div>
                 </div>
 
@@ -185,12 +315,23 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
                     </div>
                 <?php endif; ?>
 
+<<<<<<< HEAD
+=======
+                
+
+                <div id="users-section">
+                <h2 style="margin-top:18px; margin-bottom:8px;">Pending Requests</h2>
+>>>>>>> aab77d8
                 <table>
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Role</th>
+<<<<<<< HEAD
+=======
+                            <th>Requested Storage</th>
+>>>>>>> aab77d8
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -210,6 +351,12 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
                                 </span>
                             </td>
                             <td>
+<<<<<<< HEAD
+=======
+                                <?= isset($row['storage_gb']) ? intval($row['storage_gb']) . ' GB' : 'N/A'; ?>
+                            </td>
+                            <td>
+>>>>>>> aab77d8
                                 <span class="status-badge pending">
                                     <?= ucfirst($row["status"]); ?>
                                 </span>
@@ -223,15 +370,98 @@ $result = mysqli_query($db, "SELECT * FROM users WHERE status='pending' ORDER BY
                         
                         <?php if (!$hasRequests): ?>
                         <tr>
+<<<<<<< HEAD
                             <td colspan="5" class="no-requests">
+=======
+                            <td colspan="6" class="no-requests">
+>>>>>>> aab77d8
                                 No pending requests at this time.
                             </td>
                         </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
+<<<<<<< HEAD
             </div>
         </main>
     </div>
+=======
+
+                <!-- Approved/Denied infograph (Dashboard only) -->
+                <?php
+                $counts = ['approved' => 0, 'denied' => 0];
+                $res = mysqli_query($db, "SELECT status, COUNT(*) AS cnt FROM users WHERE status IN ('approved','denied') GROUP BY status");
+                if ($res) {
+                    while ($r = mysqli_fetch_assoc($res)) {
+                        $st = $r['status'];
+                        if (isset($counts[$st])) $counts[$st] = intval($r['cnt']);
+                    }
+                    mysqli_free_result($res);
+                }
+                $approvedCount = $counts['approved'];
+                $deniedCount = $counts['denied'];
+                $total = $approvedCount + $deniedCount;
+                $approvedPct = $total ? round(($approvedCount / $total) * 100, 1) : 0;
+                $deniedPct = $total ? round(($deniedCount / $total) * 100, 1) : 0;
+                ?>
+                <div class="infograph-row" style="display:flex; align-items:center; gap:20px; margin-top:22px;">
+                    <div class="status-infograph">
+                        <svg class="donut" viewBox="0 0 42 42" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <?php $r=16; $circ = 2*M_PI*$r; $dashA = ($approvedPct/100)*$circ; $dashB = ($deniedPct/100)*$circ; ?>
+                            <circle cx="18" cy="18" r="<?php echo $r; ?>" stroke="rgba(0,0,0,0.06)" stroke-width="6" fill="none" />
+                            <circle cx="18" cy="18" r="<?php echo $r; ?>" stroke="#10B981" stroke-width="6" fill="none" stroke-dasharray="<?php echo $dashA; ?> <?php echo $circ; ?>" transform="rotate(-90 18 18)" stroke-linecap="round" />
+                            <circle cx="18" cy="18" r="<?php echo $r; ?>" stroke="#ef4444" stroke-width="6" fill="none" stroke-dasharray="<?php echo $dashB; ?> <?php echo $circ; ?>" transform="rotate(-90 18 18)" stroke-linecap="round" stroke-dashoffset="-<?php echo $dashA; ?>" />
+                            <text x="18" y="20" text-anchor="middle" font-size="8" fill="var(--text)"><?php echo intval($approvedPct); ?>%</text>
+                        </svg>
+                    </div>
+                    <div class="legend" style="display:flex; flex-direction:column; gap:8px; color:var(--muted);">
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="swatch" style="width:12px;height:12px;background:#10B981;border-radius:3px"></span><strong style="margin-right:6px;color:var(--text);"><?php echo $approvedCount; ?></strong> Approved</div>
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="swatch" style="width:12px;height:12px;background:#ef4444;border-radius:3px"></span><strong style="margin-right:6px;color:var(--text);"><?php echo $deniedCount; ?></strong> Denied</div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        // Smooth scroll to anchors and mark menu active
+        (function(){
+            function setActiveLink(hash) {
+                document.querySelectorAll('.sidebar .menu li').forEach(function(li){ li.classList.remove('active'); });
+                var links = document.querySelectorAll('.sidebar .menu a');
+                links.forEach(function(a){
+                    if (a.getAttribute('href') === hash) {
+                        a.parentElement.classList.add('active');
+                    }
+                });
+            }
+
+            document.querySelectorAll('.sidebar .menu a').forEach(function(a){
+                a.addEventListener('click', function(e){
+                    var href = a.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        e.preventDefault();
+                        var target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            history.replaceState(null, '', href);
+                            setActiveLink(href);
+                        }
+                    }
+                });
+            });
+
+            // If page loaded with hash, set active and scroll
+            if (location.hash) {
+                setTimeout(function(){
+                    var target = document.querySelector(location.hash);
+                    if (target) target.scrollIntoView();
+                    setActiveLink(location.hash);
+                }, 120);
+            }
+        })();
+    </script>
+>>>>>>> aab77d8
 </body>
 </html>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+<<<<<<< HEAD
 
 // Unset all session variables
 $_SESSION = array();
@@ -11,3 +12,25 @@ session_destroy();
 header("Location: ../../index.php");
 exit;
 ?>
+=======
+// Unset all session variables
+$_SESSION = array();
+
+// Destroy the session cookie
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+// Destroy the session
+session_destroy();
+
+// Prevent caching on the logout redirect too
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Location: ../../index.php");
+exit;
+?>
+>>>>>>> aab77d8
