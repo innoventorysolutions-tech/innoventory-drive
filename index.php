@@ -63,6 +63,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_btn'])) {
                 $_SESSION["name"] = $name;
                 $_SESSION["role"] = $role;
 
+                // Ensure DB has welcome_shown column; if not, attempt to add it
+                $colCheck = mysqli_query($db, "SHOW COLUMNS FROM users LIKE 'welcome_shown'");
+                if ($colCheck && mysqli_num_rows($colCheck) == 0) {
+                    @mysqli_query($db, "ALTER TABLE users ADD COLUMN welcome_shown TINYINT(1) NOT NULL DEFAULT 0");
+                }
+
+                // Check if this is the first login (welcome_shown == 0)
+                $welcome_shown = 0;
+                $wstmt = $db->prepare("SELECT welcome_shown FROM users WHERE id=? LIMIT 1");
+                if ($wstmt) {
+                    $wstmt->bind_param("i", $id);
+                    $wstmt->execute();
+                    $wstmt->bind_result($welcome_shown);
+                    $wstmt->fetch();
+                    $wstmt->close();
+                }
+
+                if (!$welcome_shown) {
+                    $_SESSION['show_welcome'] = true;
+                    $ustmt = $db->prepare("UPDATE users SET welcome_shown=1 WHERE id=?");
+                    if ($ustmt) { $ustmt->bind_param("i", $id); $ustmt->execute(); $ustmt->close(); }
+                }
+
                 if ($role === 'admin') {
                     header("Location: pkg/user-management/admin_dashboard.php");
                 } else {
@@ -71,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login_btn'])) {
                 exit;
             }
         } else {
-            $error = "Invalid password.";
+            $error = "Invalid password";
         }
     } else {
         if ($login_type === 'admin') {
@@ -125,7 +148,10 @@ if (isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true) {
     <?php include 'common/header.php'; ?>
 
     <div class="login-container">
-        <h1>Sign in</h1>
+        <div class="form-logo">
+            <img src="/innoventory/logo/logo.png" alt="Innoventory logo">
+        </div>
+        <h1 style="text-align:center; margin:0 0 12px 0;">Sign in</h1>
         
         <?php if ($error): ?>
             <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
