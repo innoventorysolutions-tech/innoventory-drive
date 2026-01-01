@@ -16,6 +16,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
     $password = trim($_POST["password"]);
     $role = trim($_POST["role"]); // Get role from hidden field
+<<<<<<< HEAD
+=======
+    // Storage requested in GB (1-100)
+    $storage_gb = isset($_POST['storage_gb']) ? intval($_POST['storage_gb']) : 1;
+    if ($storage_gb < 1) $storage_gb = 1;
+    if ($storage_gb > 100) $storage_gb = 100;
+>>>>>>> aab77d8
     
     // Check if email exists
     $check = $db->prepare("SELECT id FROM users WHERE email=?");
@@ -32,8 +39,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $status = 'pending';
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
+<<<<<<< HEAD
         $stmt = $db->prepare("INSERT INTO users (name, email, password, role, status) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $name, $email, $hashed_password, $role, $status);
+=======
+        // Ensure DB has storage_gb column; if not, attempt to add it
+        $colCheck = mysqli_query($db, "SHOW COLUMNS FROM users LIKE 'storage_gb'");
+        if ($colCheck && mysqli_num_rows($colCheck) == 0) {
+            @mysqli_query($db, "ALTER TABLE users ADD COLUMN storage_gb INT NOT NULL DEFAULT 1");
+        }
+
+        $stmt = $db->prepare("INSERT INTO users (name, email, password, role, status, storage_gb) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssi", $name, $email, $hashed_password, $role, $status, $storage_gb);
+>>>>>>> aab77d8
 
         if ($stmt->execute()) {
             if ($role === 'admin') {
@@ -61,11 +79,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <?php include '../../common/header.php'; ?>
 
     <div class="login-container">
+<<<<<<< HEAD
         <h1>Request Access</h1>
         <?php if($msg) echo "<div class='error-message' style='background:#ecfdf5;color:#065f46;border-color:#bbf7d0;'>$msg</div>"; ?>
         <?php if($error) echo "<div class='error-message' style='background:#fff5f5;color:#b91c1c;border-color:#fecaca;'>$error</div>"; ?>
 
         <div style="background: #dbeafe; color: #1e40af; padding: 12px; border-radius: 8px; margin-bottom: 18px; font-size: 13px;">
+=======
+        <div class="form-logo">
+            <img src="/innoventory/logo/logo.png" alt="Innoventory logo">
+        </div>
+        <h1 style="text-align:center; margin-top:0;">Request Access</h1>
+        <?php if($msg) echo "<div class='message success'>".htmlspecialchars($msg)."</div>"; ?>
+        <?php if($error) echo "<div class='message error'>".htmlspecialchars($error)."</div>"; ?>
+
+        <div class="message" style="background: rgba(59,130,246,0.06); color: var(--accent-strong); font-size:13px;">
+>>>>>>> aab77d8
             Submit a request for access. An administrator will review and approve your request.
         </div>
 
@@ -83,6 +112,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="password">Create Password</label>
                 <input type="password" id="password" name="password" placeholder="Create Password" required autocomplete="new-password" minlength="6">
             </div>
+<<<<<<< HEAD
+=======
+            <div class="form-group">
+                <label for="storage_gb">Requested Storage: <span id="storageValue">1</span> GB</label>
+                <input type="range" id="storage_gb" name="storage_gb" min="1" max="100" step="1" value="1" oninput="document.getElementById('storageValue').innerText=this.value">
+            </div>
+>>>>>>> aab77d8
             <div class="actions-vertical">
                 <button type="submit" class="btn-primary">Submit Request</button>
                 <a href="../../index.php" class="btn-ghost">Back to Login</a>
